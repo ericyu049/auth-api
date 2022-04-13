@@ -1,4 +1,4 @@
-import { UUID } from "bson";
+import { randomUUID } from "crypto";
 
 function getUserByUsername(db, username) {
     const query = { username: username };
@@ -13,12 +13,11 @@ function verifyPassword(username, password) {
     return password === 'y5512601';
 }
 function createUser(db, user) {
-    const query = {uuid: UUID(), username: user.username, password: user.password, email: user.email};
+    const query = {uuid: randomUUID(), username: user.username, password: user.password, email: user.email};
     return new Promise(resolve => {
         db.collection('user').insertOne(query, (error, result) => {
             if (error) throw error;
-            console.log(result);
-            resolve(result);
+            if (result) resolve(result);
         })
     })
 

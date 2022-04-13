@@ -34,7 +34,7 @@ app.post('/signup', async (request, response) => {
 
     // create user
     const user = {
-        useranme: username,
+        username: username,
         password: password,
         email: email
     }
@@ -42,10 +42,10 @@ app.post('/signup', async (request, response) => {
     const result = await userService.createUser(db, user).catch(
         (error) => {
             response.status(400).send('Database error: ', error);
+            return;
         }
     )
-    response.status(200).send('Account created. ', result);
-    return;
+    response.status(200).json({ rspCde: 0, rspMsg: 'Account successfully created. ', result});
 });
 app.post('/login', async (request, response) => {
     const username = request.body.username;
