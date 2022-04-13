@@ -1,7 +1,12 @@
 import express from 'express';
 import { response } from 'express';
+import mongo from 'mongodb';
 import * as jwtUtil from './src/jwtUtil.js';
 import * as userService from './src/userService.js';
+
+const client = mongo.MongoClient;
+const url = 'mongodb://localhost:27017/';
+var db;
 
 const app = express();
 app.use(express.json());
@@ -9,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 8080;
 
-app.post('/checkUser', async (request, request) => {
+app.post('/checkUser', async (request, response) => {
     const username = request.body.username;
 
     const user = await userService.getUserByUsername(username);
@@ -34,18 +39,19 @@ app.post('/signup', async (request, response) => {
         email: email
     }
     // insert into database
-
-    response.status(200).send('Account created');
+    const result = await userService.createUser(db, user).catch(
+        (error) => {
+            response.status(400).send('Database error: ', error);
+        }
+    )
+    response.status(200).send('Account created. ', result);
     return;
-
-    //check for database errors
-    
 });
 app.post('/login', async (request, response) => {
     const username = request.body.username;
     const password = request.body.password;
 
-    const user = await userService.getUserByUsername(username);
+    const user = await userService.getUserByUsername(db, username);
     if (!user) {
         response.status(400).send('User not found');
         return;
@@ -66,4 +72,11 @@ app.post('/refreshToken', async (request, response) => {
 
 });
 
-app.listen(PORT, () => console.log(`Application is running on http://localhost:${PORT}`));
+
+client.connect(url, function (err, database) {
+    if (err) throw err;
+    db = database.db("timeleapmachine");
+    app.listen(PORT, () => console.log(`Application is running on http://localhost:${PORT}`));
+});
+
+
