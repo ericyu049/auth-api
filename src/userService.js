@@ -9,8 +9,8 @@ function getUserByUsername(db, username) {
         })
     });
 }
-function verifyPassword(username, password) {
-    return password === 'y5512601';
+function verifyPassword(user, password) {
+    return password === user.password;
 }
 function createUser(db, user) {
     const query = {uuid: randomUUID(), username: user.username, password: user.password, email: user.email};
@@ -20,7 +20,6 @@ function createUser(db, user) {
             if (result) resolve(result);
         })
     })
-
 }
 export { 
     getUserByUsername, 

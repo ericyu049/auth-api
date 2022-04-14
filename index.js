@@ -1,5 +1,4 @@
 import express from 'express';
-import { response } from 'express';
 import mongo from 'mongodb';
 import * as jwtUtil from './src/jwtUtil.js';
 import * as userService from './src/userService.js';
@@ -31,21 +30,18 @@ app.post('/signup', async (request, response) => {
     const username = request.body.username;
     const password = request.body.password;
     const email = request.body.email;
-
-    // create user
     const user = {
         username: username,
         password: password,
         email: email
     }
-    // insert into database
     const result = await userService.createUser(db, user).catch(
         (error) => {
             response.status(400).send('Database error: ', error);
             return;
         }
     )
-    response.status(200).json({ rspCde: 0, rspMsg: 'Account successfully created. ', result});
+    response.status(200).json({ rspCde: 0, rspMsg: 'Account successfully created. ', result });
 });
 app.post('/login', async (request, response) => {
     const username = request.body.username;
@@ -63,7 +59,9 @@ app.post('/login', async (request, response) => {
     }
     const token = jwtUtil.generateToken(user);
     const refreshToken = jwtUtil.getRefreshToken(user);
-    response.status(200).json({ rspCde: 0, rspMsg: 'Success', token, refreshToken });
+    response.cookie("ai-amadeus.auth", token, { httpOnly: true, secure: true });
+    response.cookie("ai-amadeus.leap", refreshToken, { httpOnly: true, secure: true });
+    response.status(200).json({ rspCde: 0, rspMsg: 'Success' });
 });
 app.post('/logout', async (request, response) => {
 
@@ -71,8 +69,6 @@ app.post('/logout', async (request, response) => {
 app.post('/refreshToken', async (request, response) => {
 
 });
-
-
 client.connect(url, function (err, database) {
     if (err) throw err;
     db = database.db("timeleapmachine");

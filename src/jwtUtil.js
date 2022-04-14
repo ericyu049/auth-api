@@ -5,11 +5,11 @@ const ALIVE_TIME = 15 * 60;
 const JWT_SECRETKEY = 'big penis';
 
 function generateToken(user) {
-    const role = user.role;
     const username = user.username;
+    const email = user.email;
     const type = 'access';
 
-    const tokenPayload = { role, username, type };
+    const tokenPayload = { email, username, type };
     const token = jwt.sign(
         tokenPayload,
         JWT_SECRETKEY,
@@ -19,13 +19,13 @@ function generateToken(user) {
 }
 function getRefreshToken(user) {
     const username = user.username;
-    const role = user.role;
+    const email = user.email;
     const type = 'refresh';
 
     const password = user.password;
     const key = genKey(username, password);
 
-    const tokenPayload = { type, username, role, key };
+    const tokenPayload = { type, username, email, key };
 
     const refreshToken = jwt.sign(tokenPayload, JWT_SECRETKEY);
     return refreshToken;
