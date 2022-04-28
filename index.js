@@ -59,9 +59,15 @@ app.post('/login', async (request, response) => {
     }
     const token = jwtUtil.generateToken(user);
     const refreshToken = jwtUtil.getRefreshToken(user);
-    response.cookie("ai-amadeus.auth", token, { httpOnly: true, secure: true });
+    response.cookie("ai-amadeus.auth", token, { httpOnly: true, secure: true, expire: new Date() + 900000 });
     response.cookie("ai-amadeus.leap", refreshToken, { httpOnly: true, secure: true });
     response.status(200).json({ rspCde: 0, rspMsg: 'Success' });
+});
+app.post('/isLoggedin', jwtUtil.authenticationMiddleware, async(request, response) => {
+    if(response.locals.user) {
+        response.status(200).json({ rspCde: 0, rspMsg: 'Logged in.' });
+    }
+    
 });
 app.post('/logout', async (request, response) => {
 

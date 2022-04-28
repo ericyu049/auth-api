@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/ericyu049/auth-api#readme",
   "dependencies": {
-    "axios": "^0.26.1",
     "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.5.0"
